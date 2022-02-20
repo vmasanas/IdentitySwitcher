@@ -97,10 +97,15 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="App_LocalResources\MailResources.resx">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\IdentitySwitcherController.cs" />
     <Compile Include="Model\UserCollectionDto.cs" />
+    <Compile Include="Model\RequestLog.cs" />
     <Compile Include="ModuleSettings\IdentitySwitcherModuleSettings.cs" />
     <Compile Include="ModuleSettings\IdentitySwitcherModuleSettingsRepository.cs" />
     <Compile Include="Model\SortBy.cs" />
@@ -131,6 +136,7 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="Installation\03.00.00.SqlDataProvider" />
+    <Content Include="Installation\04.00.00.sql" />
     <None Include="Installation\Project.targets">
       <SubType>Designer</SubType>
     </None>

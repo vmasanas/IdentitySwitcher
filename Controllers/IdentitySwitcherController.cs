@@ -25,6 +25,7 @@
 namespace DNN.Modules.IdentitySwitcher.Controllers
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Web;
@@ -33,11 +34,15 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
     using DNN.Modules.IdentitySwitcher.ModuleSettings;
     using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
+    using DotNetNuke.Data;
     using DotNetNuke.Entities.Profile;
     using DotNetNuke.Entities.Users;
     using DotNetNuke.Security;
     using DotNetNuke.Security.Roles;
     using DotNetNuke.Services.Exceptions;
+    using DotNetNuke.Services.Localization;
+    using DotNetNuke.Services.Mail;
+    using DotNetNuke.Services.Tokens;
     using DotNetNuke.Web.Api;
 
     /// <summary>
@@ -93,8 +98,7 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpGet]
-        public IHttpActionResult GetUsers(string searchText = null, string selectedSearchItem = null,
-            bool onlyDefault = false)
+        public IHttpActionResult GetUsers(string searchText = null, string selectedSearchItem = null, bool onlyDefault = false)
         {
             var result = default(IHttpActionResult);
 
@@ -156,23 +160,36 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
 
             try
             {
-                if (selectedUserId == -1)
+                // Log request
+                RequestLog requestLog = RequestLog(selectedUserId);
+
+                // Request approval if required
+                var repository = new IdentitySwitcherModuleSettingsRepository();
+                var settings = repository.GetSettings(ActiveModule);
+                if (settings.RequestAuthorization ?? false)
                 {
-                    HttpContext.Current.Response.Redirect(Globals.NavigateURL("LogOff"));
+                    SendRequestAuthorization(requestLog);
                 }
                 else
                 {
-                    var selectedUser = UserController.GetUserById(PortalSettings.PortalId, selectedUserId);
+                    if (selectedUserId == -1)
+                    {
+                        HttpContext.Current.Response.Redirect(Globals.NavigateURL("LogOff"));
+                    }
+                    else
+                    {
+                        var selectedUser = UserController.GetUserById(PortalSettings.PortalId, selectedUserId);
 
-                    DataCache.ClearUserCache(PortalSettings.PortalId, selectedUserName);
+                        DataCache.ClearUserCache(PortalSettings.PortalId, selectedUserName);
 
-                    // Sign current user out.
-                    var objPortalSecurity = new PortalSecurity();
-                    objPortalSecurity.SignOut();
+                        // Sign current user out.
+                        var objPortalSecurity = new PortalSecurity();
+                        objPortalSecurity.SignOut();
 
-                    // Sign new user in.
-                    UserController.UserLogin(PortalSettings.PortalId, selectedUser, PortalSettings.PortalName,
-                        HttpContext.Current.Request.UserHostAddress, false);
+                        // Sign new user in.
+                        UserController.UserLogin(PortalSettings.PortalId, selectedUser, PortalSettings.PortalName,
+                            HttpContext.Current.Request.UserHostAddress, false);
+                    }
                 }
                 result = Ok();
             }
@@ -284,6 +301,59 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
             }
 
             return users;
+        }
+
+        /// <summary>
+        /// Adds a log of the impersonation action
+        /// </summary>
+        /// <param name="userIdToImpersonate"></param>
+        private RequestLog RequestLog(int userIdToImpersonate)
+        {
+            RequestLog log = new RequestLog();
+
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<RequestLog>();
+                log.RequestId = Guid.NewGuid().ToString();
+                log.RequestByUserId = UserInfo.UserID;
+                log.RequestDate = DateTime.Now;
+                log.RequestIP = HttpContext.Current.Request.UserHostAddress;
+                log.SwitchToUserId = userIdToImpersonate;
+
+                rep.Insert(log);
+            }
+
+            return log;
+        }
+
+        /// <summary>
+        /// Sends a request authorization to the user that is being impersonated
+        /// </summary>
+        /// <param name="requestLog"></param>
+        private void SendRequestAuthorization(RequestLog requestLog)
+        {
+            string MailResourceFile = "/DesktopModules/IdentitySwitcher/App_LocalResources/MailResources.resx";
+
+            string subject = Localization.GetString("RequestSubject", MailResourceFile);
+            string body = Localization.GetString("RequestBody", MailResourceFile);
+
+            UserInfo user = UserController.GetUserById(PortalSettings.PortalId, requestLog.SwitchToUserId);
+
+            ArrayList custom = new ArrayList();
+            custom.Add(user.DisplayName);
+            custom.Add(UserInfo.DisplayName);
+            custom.Add(UserInfo.Email);
+            custom.Add(user.Username);
+            custom.Add(requestLog.RequestDate.ToString());
+            string approvalURL = "";
+            custom.Add(approvalURL);
+
+            var tokenizer = new TokenReplace();
+            subject = tokenizer.ReplaceEnvironmentTokens(subject);
+            body = tokenizer.ReplaceEnvironmentTokens(body, custom, "");
+
+            // TODO : token replace
+            Mail.SendEmail(PortalSettings.Email, user.Email, subject, body);
         }
     }
     #endregion

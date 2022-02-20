@@ -63,5 +63,14 @@ namespace DNN.Modules.IdentitySwitcher.ModuleSettings
         /// </value>
         [TabModuleSetting(ParameterName = "userSwitchingSpeed")]
         public UserSwitchingSpeed UserSwitchingSpeed { get; set; } = UserSwitchingSpeed.Fast;
+
+        /// <summary>
+        ///     Enables the option to request authorization for the impersonation.
+        /// </summary>
+        /// <value>
+        ///     Request Authorization.
+        /// </value>
+        [TabModuleSetting(ParameterName = "requestAuthorization")]
+        public bool? RequestAuthorization { get; set; }
     }
 }

@@ -117,43 +117,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="plIncludeHostUser.Text" xml:space="preserve">
-    <value>Include Host users</value>
+  <data name="RequestBody.Text" xml:space="preserve">
+    <value>&lt;p&gt;
+    Dear [Custom:0],
+&lt;/p&gt;
+&lt;p&gt;
+    This is a request for &lt;strong&gt;[Portal:PortalName]&lt;/strong&gt; in order to impersonate your account on the site.
+&lt;/p&gt;
+&lt;p&gt;
+    The details of the request are as follows:&lt;br/&gt;
+    &lt;ul&gt;
+        &lt;li&gt;User that requests the action: [Custom:1]&lt;/li&gt;
+        &lt;li&gt;Email of the user that requests the action: [Custom:2]&lt;/li&gt;
+        &lt;li&gt;&amp;nbsp;&lt;/li&gt;
+        &lt;li&gt;&lt;strong&gt;Account that will be impersonated: [Custom:3]&lt;/strong&gt;&lt;/li&gt;
+        &lt;li&gt;&amp;nbsp;&lt;/li&gt;
+        &lt;li&gt;Date requested: [Custom:4]&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/p&gt;
+
+&lt;p&gt;
+    If you want to allow the request to proceed, please click the link below:&lt;br/&gt;
+    &lt;a href="[Custom:5]"&gt;I want to approve the request&lt;/a&gt;
+&lt;p/&gt;
+&lt;p&gt;
+    &lt;strong&gt;Note: &lt;/strong&gt; Remember that by allowing this request to proceed the above user will be able to act on your behalf on the site.
+&lt;/p&gt;
+
+&lt;p&gt;
+    &lt;strong&gt;Note: If you don't think this is a valid request, please inform the site administrator.&lt;/strong&gt;
+&lt;/p&gt;
+
+&lt;p&gt;
+    Sincerely,&lt;br/&gt;
+    [Portal:PortalName]
+&lt;/p&gt;</value>
   </data>
-  <data name="plIncludeHostUser.Help" xml:space="preserve">
-    <value>Include the host users in the dropdown list. Caution: doing so will give non host users the option to log on as host user</value>
-  </data>
-  <data name="ControlTitle_settings.Text" xml:space="preserve">
-    <value>IdentitySwitcher Settings</value>
-  </data>
-  <data name="plSortBy.Help" xml:space="preserve">
-    <value>You can specify if you want the list sorted by name or username</value>
-  </data>
-  <data name="plSortBy.Text" xml:space="preserve">
-    <value>Sort by</value>
-  </data>
-  <data name="SortByUserName.Text" xml:space="preserve">
-    <value>Username</value>
-  </data>
-  <data name="SortByDisplayName.Text" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="plSelectingMethod.Help" xml:space="preserve">
-    <value>Choose whether you want to directly select the user from the single dropdown or if you want to have filtering on users and/or roles added to the selection</value>
-  </data>
-  <data name="plSelectingMethod.Text" xml:space="preserve">
-    <value>Selecting method</value>
-  </data>
-  <data name="Fast.Text" xml:space="preserve">
-    <value>Direct select from userlist</value>
-  </data>
-  <data name="Slow.Text" xml:space="preserve">
-    <value>Select after user &amp; role filtering</value>
-  </data>
-  <data name="plRequestAuthorization.Help" xml:space="preserve">
-    <value>When this option is enabled, the user being impersonated will receive and email with the details of the user doing the impersonation. The request will have to be approved before the impersonation is effective.</value>
-  </data>
-  <data name="plRequestAuthorization.Text" xml:space="preserve">
-    <value>Request authorization</value>
+  <data name="RequestSubject.Text" xml:space="preserve">
+    <value>[Portal:PortalName] Request for impersonation</value>
   </data>
 </root>

@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DNN.Modules.IdentitySwitcher {
-    
-    
-    public partial class Settings {
-        
+namespace DNN.Modules.IdentitySwitcher
+{
+
+
+    public partial class Settings
+    {
+
         /// <summary>
         /// trHostSettings control.
         /// </summary>
@@ -20,7 +22,7 @@ namespace DNN.Modules.IdentitySwitcher {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl trHostSettings;
-        
+
         /// <summary>
         /// plIncludeHostUser control.
         /// </summary>
@@ -29,7 +31,7 @@ namespace DNN.Modules.IdentitySwitcher {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.UserControl plIncludeHostUser;
-        
+
         /// <summary>
         /// cbIncludeHostUser control.
         /// </summary>
@@ -38,7 +40,7 @@ namespace DNN.Modules.IdentitySwitcher {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox cbIncludeHostUser;
-        
+
         /// <summary>
         /// plSortBy control.
         /// </summary>
@@ -47,7 +49,7 @@ namespace DNN.Modules.IdentitySwitcher {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.UserControl plSortBy;
-        
+
         /// <summary>
         /// rbSortBy control.
         /// </summary>
@@ -56,7 +58,7 @@ namespace DNN.Modules.IdentitySwitcher {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButtonList rbSortBy;
-        
+
         /// <summary>
         /// plSelectingMethod control.
         /// </summary>
@@ -65,7 +67,7 @@ namespace DNN.Modules.IdentitySwitcher {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.UserControl plSelectingMethod;
-        
+
         /// <summary>
         /// rbSelectingMethod control.
         /// </summary>
@@ -74,5 +76,23 @@ namespace DNN.Modules.IdentitySwitcher {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButtonList rbSelectingMethod;
+
+        /// <summary>
+        /// plRequestAuthorization control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl plRequestAuthorization;
+
+        /// <summary>
+        /// cbRequestAuthorization control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox cbRequestAuthorization;
     }
 }

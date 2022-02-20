@@ -16,4 +16,9 @@
         <asp:RadioButtonList ID="rbSelectingMethod" runat="server" CssClass="Normal" RepeatDirection="Vertical" RepeatLayout="Flow">
         </asp:RadioButtonList>
     </div>
+    <div class="dnnFormItem">
+        <dnn:label id="plRequestAuthorization" runat="server" controlname="cbRequestAuthorization" suffix=":" />
+        <asp:CheckBox id="cbRequestAuthorization" runat="server" />
+    </div>
+
 </asp:Panel>
