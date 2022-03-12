@@ -119,7 +119,7 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
                 }
 
                 List<UserInfo> usersInfo = new List<UserInfo>();
-                if (settings.IncludeAdmin ?? false)
+                if (settings.IncludeAdmin.GetValueOrDefault())
                 {
                     usersInfo.AddRange(usersList);
                 }
@@ -181,7 +181,7 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
                 // Request approval if required
                 var repository = new IdentitySwitcherModuleSettingsRepository();
                 var settings = repository.GetSettings(ActiveModule);
-                if (settings.RequestAuthorization ?? false)
+                if (settings.RequestAuthorization.GetValueOrDefault() && selectedUserId != -1)
                 {
                     SendRequestAuthorization(requestLog);
                 }
@@ -199,7 +199,7 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
                 }
                 result = Ok(new
                 {
-                    requestAuthorization = settings.RequestAuthorization ?? false,
+                    requestAuthorization = settings.RequestAuthorization.GetValueOrDefault(),
                     requestId = requestLog.Id
                 });
             }
@@ -285,7 +285,7 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
             var settings = repository.GetSettings(ActiveModule);
 
             // If includehost setting is set to true, add host users to the list.
-            if (settings.IncludeHost ?? false)
+            if (settings.IncludeHost.GetValueOrDefault())
             {
                 var hostUsers = UserController.GetUsers(false, true, Null.NullInteger);
 

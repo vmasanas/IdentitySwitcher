@@ -74,7 +74,7 @@ namespace DNN.Modules.IdentitySwitcher
 
                     if (UserInfo.IsSuperUser)
                     {
-                        cbIncludeHostUser.Checked = settings.IncludeHost ?? false;
+                        cbIncludeHostUser.Checked = settings.IncludeHost.GetValueOrDefault();
                     }
                     else
                     {
@@ -83,7 +83,7 @@ namespace DNN.Modules.IdentitySwitcher
 
                     if (UserInfo.IsSuperUser || UserInfo.IsInRole(PortalSettings.AdministratorRoleName))
                     {
-                        cbIncludeAdminUser.Checked = settings.IncludeAdmin ?? false;
+                        cbIncludeAdminUser.Checked = settings.IncludeAdmin.GetValueOrDefault();
                     }
                     else
                     {
@@ -93,7 +93,7 @@ namespace DNN.Modules.IdentitySwitcher
                     rbSortBy.SelectedValue = ((int)settings.SortBy).ToString();
                     rbSelectingMethod.SelectedValue = ((int)settings.UserSwitchingSpeed).ToString();
 
-                    cbRequestAuthorization.Checked = settings.RequestAuthorization ?? false;
+                    cbRequestAuthorization.Checked = settings.RequestAuthorization.GetValueOrDefault();
                 }
             }
             catch (Exception exception) //Module failed to load
