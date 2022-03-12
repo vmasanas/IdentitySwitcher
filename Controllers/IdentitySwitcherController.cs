@@ -35,10 +35,12 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
     using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Data;
+    using DotNetNuke.Entities.Modules;
     using DotNetNuke.Entities.Portals;
     using DotNetNuke.Entities.Profile;
     using DotNetNuke.Entities.Users;
     using DotNetNuke.Security;
+    using DotNetNuke.Security.Permissions;
     using DotNetNuke.Security.Roles;
     using DotNetNuke.Services.Exceptions;
     using DotNetNuke.Services.Localization;
@@ -56,11 +58,25 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
         ///     Gets the search items.
         /// </summary>
         /// <returns></returns>
+        [SupportedModules("IdentitySwitcher")]
         [AllowAnonymous]
         [HttpGet]
         public IHttpActionResult GetSearchItems()
         {
             var result = default(IHttpActionResult);
+
+            if (!CheckSecurity(ActiveModule, UserInfo))
+            {
+                Exceptions.LogException(new Exception(String.Format("IdentitySwitcher module access without proper security context. " +
+                    "ModuleId: {0} - TabId: {1} - PortalId: {2} - UserId: {3} - IP: {4}",
+                    ActiveModule.ModuleID,
+                    ActiveModule.TabID,
+                    ActiveModule.PortalID,
+                    UserInfo.UserID,
+                    HttpContext.Current.Request.UserHostAddress
+                    )));
+                return result;
+            }
 
             // Obtain the properties of each user profile and return these for the user to search by.
             try
@@ -97,11 +113,26 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
         /// <param name="selectedSearchItem">The selected search item.</param>
         /// <param name="onlyDefault">if set to <c>true</c> [only default].</param>
         /// <returns></returns>
+        [SupportedModules("IdentitySwitcher")]
         [AllowAnonymous]
         [HttpGet]
         public IHttpActionResult GetUsers(string searchText = null, string selectedSearchItem = null, bool onlyDefault = false)
         {
             var result = default(IHttpActionResult);
+
+            if (!CheckSecurity(ActiveModule, UserInfo))
+            {
+                Exceptions.LogException(new Exception(String.Format("IdentitySwitcher module access without proper security context. " +
+                    "ModuleId: {0} - TabId: {1} - PortalId: {2} - UserId: {3} - IP: {4}",
+                    ActiveModule.ModuleID,
+                    ActiveModule.TabID,
+                    ActiveModule.PortalID,
+                    UserInfo.UserID,
+                    HttpContext.Current.Request.UserHostAddress
+                    )));
+                return result;
+            }
+
             var repository = new IdentitySwitcherModuleSettingsRepository();
             var settings = repository.GetSettings(ActiveModule);
 
@@ -167,11 +198,25 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
         /// <param name="selectedUserId">The selected user identifier.</param>
         /// <param name="selectedUserName">Name of the selected user user.</param>
         /// <returns></returns>
+        [SupportedModules("IdentitySwitcher")]
         [AllowAnonymous]
         [HttpPost]
         public IHttpActionResult SwitchUser(int selectedUserId, string selectedUserName)
         {
             var result = default(IHttpActionResult);
+
+            if (!CheckSecurity(ActiveModule, UserInfo))
+            {
+                Exceptions.LogException(new Exception(String.Format("IdentitySwitcher module access without proper security context. " +
+                    "ModuleId: {0} - TabId: {1} - PortalId: {2} - UserId: {3} - IP: {4}",
+                    ActiveModule.ModuleID,
+                    ActiveModule.TabID,
+                    ActiveModule.PortalID,
+                    UserInfo.UserID,
+                    HttpContext.Current.Request.UserHostAddress
+                    )));
+                return result;
+            }
 
             try
             {
@@ -218,11 +263,25 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
         /// </summary>
         /// <param name="id">Id of the request.</param>
         /// <returns></returns>
+        [SupportedModules("IdentitySwitcher")]
         [AllowAnonymous]
         [HttpGet]
         public IHttpActionResult CheckStatus(int id)
         {
             var result = default(IHttpActionResult);
+
+            if (!CheckSecurity(ActiveModule, UserInfo))
+            {
+                Exceptions.LogException(new Exception(String.Format("IdentitySwitcher module access without proper security context. " +
+                    "ModuleId: {0} - TabId: {1} - PortalId: {2} - UserId: {3} - IP: {4}",
+                    ActiveModule.ModuleID,
+                    ActiveModule.TabID,
+                    ActiveModule.PortalID,
+                    UserInfo.UserID,
+                    HttpContext.Current.Request.UserHostAddress
+                    )));
+                return result;
+            }
 
             try
             {
@@ -413,6 +472,25 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
             body = tokenizer.ReplaceEnvironmentTokens(body, parameters, "Custom");
 
             Mail.SendEmail(PortalSettings.Email, user.Email, subject, body);
+        }
+
+        private bool CheckSecurity(ModuleInfo module, UserInfo user)
+        {
+            bool isValid = true;
+
+            // module is of proper type
+            if (module.DesktopModule.FriendlyName != "IdentitySwitcher")
+                isValid = false;
+
+            // user has permissions on the page
+            if (!TabPermissionController.CanViewPage(module.ParentTab))
+                isValid = false;
+
+            // user has permissions on the module
+            if(!ModulePermissionController.CanViewModule(module))
+                isValid = false;
+
+            return isValid;
         }
 
         private void ExecuteSwitchUser(UserInfo selectedUser)

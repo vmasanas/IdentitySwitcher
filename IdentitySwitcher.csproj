@@ -140,11 +140,13 @@
     </None>
     <Content Include="Installation\03.00.00.SqlDataProvider" />
     <None Include="Installation\04.00.00.sqlDataProvider" />
+    <Content Include="Installation\IdentitySwitcher.dnn" />
     <None Include="Installation\Project.targets">
       <SubType>Designer</SubType>
     </None>
     <Content Include="Installation\CleanUp\Cleanup.03.01.00.txt" />
     <Content Include="Installation\CleanUp\Cleanup.03.00.00.txt" />
+    <Content Include="Installation\IdentitySwitcher.png" />
     <Content Include="Installation\ReleaseNotes\Release.03.01.00.txt" />
     <Content Include="Installation\ReleaseNotes\Release.03.00.00.txt" />
     <Content Include="packages.config">
