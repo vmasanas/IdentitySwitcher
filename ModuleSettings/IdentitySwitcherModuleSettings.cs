@@ -47,6 +47,16 @@ namespace DNN.Modules.IdentitySwitcher.ModuleSettings
         public bool? IncludeHost { get; set; }
 
         /// <summary>
+        ///     Gets or sets the include admin.
+        /// </summary>
+        /// <value>
+        ///     The include admin.
+        /// </value>
+        [TabModuleSetting(ParameterName = "includeAdmin")]
+        public bool? IncludeAdmin { get; set; }
+
+
+        /// <summary>
         ///     Gets or sets the sort by.
         /// </summary>
         /// <value>

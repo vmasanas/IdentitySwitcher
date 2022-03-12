@@ -102,21 +102,36 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
         public IHttpActionResult GetUsers(string searchText = null, string selectedSearchItem = null, bool onlyDefault = false)
         {
             var result = default(IHttpActionResult);
+            var repository = new IdentitySwitcherModuleSettingsRepository();
+            var settings = repository.GetSettings(ActiveModule);
 
             try
             {
-                var usersInfo = new List<UserInfo>();
+                List<UserInfo> usersList = new List<UserInfo>();
 
                 // Get only the default users or..
                 if (!onlyDefault)
                 {
                     // ..get all users if no searchtext is provided or filtered users if a searchtext is provided.
-                    usersInfo = searchText == null
+                    usersList = searchText == null
                         ? GetAllUsers()
                         : GetFilteredUsers(searchText, selectedSearchItem);
-                    usersInfo = SortUsers(usersInfo);
                 }
 
+                List<UserInfo> usersInfo = new List<UserInfo>();
+                if (settings.IncludeAdmin ?? false)
+                {
+                    usersInfo.AddRange(usersList);
+                }
+                else
+                {
+                    foreach (UserInfo user in usersList)
+                    {
+                        if (!user.IsInRole(PortalSettings.AdministratorRoleName))
+                            usersInfo.Add(user);
+                    }
+                }
+                usersInfo = SortUsers(usersInfo);
                 AddDefaultUsers(usersInfo);
 
                 var selectedUserId = UserInfo.UserID;
@@ -130,8 +145,7 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
                         UserAndDisplayName = userInfo.DisplayName != null
                                 ? $"{userInfo.DisplayName} - {userInfo.Username}"
                                 : userInfo.Username
-                    })
-                        .ToList(),
+                    }).ToList(),
                     SelectedUserId = selectedUserId
                 };
 
@@ -284,7 +298,6 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
             }
 
             users.Insert(0, new UserInfo { Username = "Anonymous", DisplayName = null });
-
         }
 
         /// <summary>
@@ -404,6 +417,15 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
 
         private void ExecuteSwitchUser(UserInfo selectedUser)
         {
+            var repository = new IdentitySwitcherModuleSettingsRepository();
+            var settings = repository.GetSettings(ActiveModule);
+
+            if (!settings.IncludeHost.GetValueOrDefault() && selectedUser.IsSuperUser)
+                return;
+
+            if (!settings.IncludeAdmin.GetValueOrDefault() && selectedUser.IsInRole(PortalSettings.AdministratorRoleName))
+                return;
+
             DataCache.ClearUserCache(PortalSettings.PortalId, selectedUser.Username);
 
             // Sign current user out.

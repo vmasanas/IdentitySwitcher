@@ -6,6 +6,10 @@
         <dnn:label id="plIncludeHostUser" runat="server" controlname="cbIncludeHostUser" suffix=":" />
         <asp:CheckBox ID="cbIncludeHostUser" runat="server" />
     </div>
+    <div id="trAdminSettings" class="dnnFormItem" runat="server">
+        <dnn:label id="plIncludeAdminUser" runat="server" controlname="cbIncludeAdminUser" suffix=":" />
+        <asp:CheckBox ID="cbIncludeAdminUser" runat="server" />
+    </div>
     <div class="dnnFormItem">
         <dnn:label id="plSortBy" runat="server" controlname="rbSortBy" suffix=":" />
         <asp:RadioButtonList ID="rbSortBy" runat="server" CssClass="Normal" RepeatDirection="Vertical" RepeatLayout="Flow">
@@ -18,6 +22,6 @@
     </div>
     <div class="dnnFormItem">
         <dnn:label id="plRequestAuthorization" runat="server" controlname="cbRequestAuthorization" suffix=":" />
-        <asp:CheckBox id="cbRequestAuthorization" runat="server" />
+        <asp:CheckBox ID="cbRequestAuthorization" runat="server" />
     </div>
 </asp:Panel>

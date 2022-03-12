@@ -81,6 +81,15 @@ namespace DNN.Modules.IdentitySwitcher
                         trHostSettings.Visible = false;
                     }
 
+                    if (UserInfo.IsSuperUser || UserInfo.IsInRole(PortalSettings.AdministratorRoleName))
+                    {
+                        cbIncludeAdminUser.Checked = settings.IncludeAdmin ?? false;
+                    }
+                    else
+                    {
+                        trAdminSettings.Visible = false;
+                    }
+
                     rbSortBy.SelectedValue = ((int)settings.SortBy).ToString();
                     rbSelectingMethod.SelectedValue = ((int)settings.UserSwitchingSpeed).ToString();
 
@@ -112,6 +121,10 @@ namespace DNN.Modules.IdentitySwitcher
                 if (UserInfo.IsSuperUser)
                 {
                     settings.IncludeHost = cbIncludeHostUser.Checked;
+                }
+                if (UserInfo.IsSuperUser || UserInfo.IsInRole(PortalSettings.AdministratorRoleName))
+                {
+                    settings.IncludeAdmin = cbIncludeAdminUser.Checked;
                 }
                 settings.SortBy = (SortBy)Enum.Parse(typeof(SortBy), rbSortBy.SelectedValue);
                 settings.UserSwitchingSpeed = (UserSwitchingSpeed)Enum.Parse(typeof(UserSwitchingSpeed), rbSelectingMethod.SelectedValue);

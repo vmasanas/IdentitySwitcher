@@ -42,6 +42,33 @@ namespace DNN.Modules.IdentitySwitcher
         protected global::System.Web.UI.WebControls.CheckBox cbIncludeHostUser;
 
         /// <summary>
+        /// trAdminSettings control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl trAdminSettings;
+
+        /// <summary>
+        /// plIncludeAdminUser control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UserControl plIncludeAdminUser;
+
+        /// <summary>
+        /// cbIncludeAdminUser control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox cbIncludeAdminUser;
+
+        /// <summary>
         /// plSortBy control.
         /// </summary>
         /// <remarks>
