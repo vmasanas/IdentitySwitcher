@@ -20,5 +20,4 @@
         <dnn:label id="plRequestAuthorization" runat="server" controlname="cbRequestAuthorization" suffix=":" />
         <asp:CheckBox id="cbRequestAuthorization" runat="server" />
     </div>
-
 </asp:Panel>

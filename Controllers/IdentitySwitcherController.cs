@@ -35,6 +35,7 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
     using DotNetNuke.Common;
     using DotNetNuke.Common.Utilities;
     using DotNetNuke.Data;
+    using DotNetNuke.Entities.Portals;
     using DotNetNuke.Entities.Profile;
     using DotNetNuke.Entities.Users;
     using DotNetNuke.Security;
@@ -178,20 +179,15 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
                     }
                     else
                     {
-                        var selectedUser = UserController.GetUserById(PortalSettings.PortalId, selectedUserId);
-
-                        DataCache.ClearUserCache(PortalSettings.PortalId, selectedUserName);
-
-                        // Sign current user out.
-                        var objPortalSecurity = new PortalSecurity();
-                        objPortalSecurity.SignOut();
-
-                        // Sign new user in.
-                        UserController.UserLogin(PortalSettings.PortalId, selectedUser, PortalSettings.PortalName,
-                            HttpContext.Current.Request.UserHostAddress, false);
+                        UserInfo selectedUser = UserController.GetUserById(PortalSettings.PortalId, selectedUserId);
+                        ExecuteSwitchUser(selectedUser);
                     }
                 }
-                result = Ok();
+                result = Ok(new
+                {
+                    requestAuthorization = settings.RequestAuthorization ?? false,
+                    requestId = requestLog.Id
+                });
             }
             catch (Exception exception)
             {
@@ -202,6 +198,56 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
 
             return result;
         }
+
+        /// <summary>
+        /// Checks status of the request.
+        /// </summary>
+        /// <param name="id">Id of the request.</param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpGet]
+        public IHttpActionResult CheckStatus(int id)
+        {
+            var result = default(IHttpActionResult);
+
+            try
+            {
+                bool approved = false;
+
+                using (IDataContext ctx = DataContext.Instance())
+                {
+                    var rep = ctx.GetRepository<RequestLog>();
+                    RequestLog log = rep.Find("WHERE Id = @0 ", id).FirstOrDefault();
+
+                    // We allow the identity switch if the request is valid as:
+                    // - user is the same that initiated the request
+                    // - it is on the same IP
+                    // - request is approved
+                    // - approval date is not older than 1 hour
+                    if (log != null &&
+                        log.RequestByUserId == UserInfo.UserID &&
+                        log.RequestIP == HttpContext.Current.Request.UserHostAddress &&
+                        log.ApprovalDate.HasValue &&
+                        DateTime.Now < log.ApprovalDate.Value.AddHours(1))
+                    {
+                        UserInfo selectedUser = UserController.GetUserById(PortalSettings.PortalId, log.SwitchToUserId);
+                        ExecuteSwitchUser(selectedUser);
+
+                        approved = true;
+                    }
+                }
+                result = Ok(approved);
+            }
+            catch (Exception exception)
+            {
+                Exceptions.LogException(exception);
+
+                result = InternalServerError(exception);
+            }
+
+            return result;
+        }
+
         #endregion
 
         #region Private methods
@@ -332,29 +378,66 @@ namespace DNN.Modules.IdentitySwitcher.Controllers
         /// <param name="requestLog"></param>
         private void SendRequestAuthorization(RequestLog requestLog)
         {
-            string MailResourceFile = "/DesktopModules/IdentitySwitcher/App_LocalResources/MailResources.resx";
+            string SharedResourceFile = "~/DesktopModules/IdentitySwitcher/App_LocalResources/SharedResources.resx";
 
-            string subject = Localization.GetString("RequestSubject", MailResourceFile);
-            string body = Localization.GetString("RequestBody", MailResourceFile);
+            string subject = Localization.GetString("RequestSubject", SharedResourceFile);
+            string body = Localization.GetString("RequestBody", SharedResourceFile);
 
             UserInfo user = UserController.GetUserById(PortalSettings.PortalId, requestLog.SwitchToUserId);
 
-            ArrayList custom = new ArrayList();
-            custom.Add(user.DisplayName);
-            custom.Add(UserInfo.DisplayName);
-            custom.Add(UserInfo.Email);
-            custom.Add(user.Username);
-            custom.Add(requestLog.RequestDate.ToString());
-            string approvalURL = "";
-            custom.Add(approvalURL);
+            ArrayList parameters = new ArrayList
+            {
+                user.DisplayName,
+                UserInfo.DisplayName,
+                UserInfo.Email,
+                user.Username,
+                requestLog.RequestDate.ToString(),
+                requestLog.RequestId
+            };
 
             var tokenizer = new TokenReplace();
             subject = tokenizer.ReplaceEnvironmentTokens(subject);
-            body = tokenizer.ReplaceEnvironmentTokens(body, custom, "");
+            body = tokenizer.ReplaceEnvironmentTokens(body, parameters, "Custom");
 
-            // TODO : token replace
             Mail.SendEmail(PortalSettings.Email, user.Email, subject, body);
         }
+
+        private void ExecuteSwitchUser(UserInfo selectedUser)
+        {
+            DataCache.ClearUserCache(PortalSettings.PortalId, selectedUser.Username);
+
+            // Sign current user out.
+            var objPortalSecurity = new PortalSecurity();
+            objPortalSecurity.SignOut();
+
+            // Sign new user in.
+            UserController.UserLogin(PortalSettings.PortalId, selectedUser, PortalSettings.PortalName,
+                HttpContext.Current.Request.UserHostAddress, false);
+        }
+        #endregion
+
+        public static bool ApproveRequest(string requestId)
+        {
+            using (IDataContext ctx = DataContext.Instance())
+            {
+                var rep = ctx.GetRepository<RequestLog>();
+                RequestLog log = rep.Find("WHERE RequestId = @0 ", requestId).FirstOrDefault();
+
+                if (log != null)
+                {
+                    PortalSettings ps = PortalController.Instance.GetCurrentPortalSettings();
+                    log.ApprovalByUserId = ps.UserInfo.UserID;
+                    log.ApprovalDate = DateTime.Now;
+                    log.ApprovalIP = HttpContext.Current.Request.UserHostAddress;
+                    rep.Update(log);
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
     }
-    #endregion
 }
