@@ -364,6 +364,7 @@
 			$(MSBuildProjectDirectory)\tmpCompressCSS\**"
       Include="$(MSBuildProjectDirectory)\**\*.ascx;
 						$(MSBuildProjectDirectory)\**\*.aspx;
+						$(MSBuildProjectDirectory)\**\*.ashx;
 						$(MSBuildProjectDirectory)\**\*.css;
 						$(MSBuildProjectDirectory)\**\*.htm;
 						$(MSBuildProjectDirectory)\**\*.html;
